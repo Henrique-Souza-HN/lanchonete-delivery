@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup - Lanchonete Delivery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div style="max-width: 600px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px;">
+        <h1>Ferramenta de Backup</h1>
+        
+        <div style="margin: 20px 0;">
+            <h2>Exportar Dados</h2>
+            <button onclick="exportData()" class="btn btn-primary">Baixar Backup</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h2>Importar Dados</h2>
+            <textarea id="import-data" rows="10" style="width: 100%;" placeholder="Cole aqui os dados JSON..."></textarea>
+            <button onclick="importData()" class="btn btn-primary" style="margin-top: 10px;">Importar Dados</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h2>Limpar Todos os Dados</h2>
+            <button onclick="clearAllData()" class="btn btn-danger">Limpar Tudo</button>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="index.html" class="btn btn-secondary">Voltar ao Site</a>
+        </div>
+    </div>
+
+    <script>
+        function exportData() {
+            const data = {
+                products: JSON.parse(localStorage.getItem('products') || '[]'),
+                cart: JSON.parse(localStorage.getItem('cart') || '[]')
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lanchonete-backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const dataText = document.getElementById('import-data').value;
+            try {
+                const data = JSON.parse(dataText);
+                
+                if (data.products) {
+                    localStorage.setItem('products', JSON.stringify(data.products));
+                }
+                if (data.cart) {
+                    localStorage.setItem('cart', JSON.stringify(data.cart));
+                }
+                
+                alert('Dados importados com sucesso!');
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert('Erro ao importar dados. Verifique o formato JSON.');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Tem certeza que deseja limpar TODOS os dados? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem('products');
+                localStorage.removeItem('cart');
+                alert('Todos os dados foram limpos!');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
